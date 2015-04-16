@@ -81,7 +81,7 @@ public class MainActivity extends ActionBarActivity {
                         // current activity
                         //MainScreenActivity.this.finish();
                         String value = input.getText().toString();
-                        value = "https://www.newthinktank.com/wordpress/lotr.txt";
+                        value = "https://raw.githubusercontent.com/ll2585/ll2585.github.io/master/korean/test.txt";
                         download(value);
                     }
                 })
