@@ -9,6 +9,9 @@ public class Card {
         this.back = back;
     }
 
+    public Card() {
+    }
+
     public String getFront(){
         return this.front;
     }

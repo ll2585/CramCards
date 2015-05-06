@@ -59,6 +59,7 @@ public class CLIPresenterTest {
         assertTrue(log.getLog().contains("front"));
         assertTrue(log.getLog().contains("f)lip/(n)ext/(p)revious/(k)now"));
         assertTrue(log.getLog().contains("Try again"));
-
+        assertTrue(log.getLog().contains("back"));
+        assertTrue(log.getLog().contains("Exiting"));
     }
 }
