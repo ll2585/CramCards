@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -35,17 +37,22 @@ public class TableOfContents extends Activity {
 	private static final String TAG = "FLASHCARDS";
 	private List<List<FlashCard>> decks;
 	private List<List<FlashCard>> deckToLoad;
-	private int numPerDeck = 8;
-	private boolean shuffle = false;
+	private int numPerDeck;
+	private boolean shuffle;
 	private ListView listView;
 	private CheckBox[] checkboxes;
 	private String[] selectedFiles;
 	private List<FlashCard> masterDeck;
 	private ArrayList<String> fileNames;
 	private ArrayAdapter<String> adapter;
+
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		loadPreferences();
+		Log.d("SETTINGS", "we generated " + numPerDeck + " words/card??");
 		setContentView(R.layout.table_of_contents_activity);
 		getSelectedFileNames();
 		openCSVs();
@@ -53,15 +60,19 @@ public class TableOfContents extends Activity {
 		splitUpCSVs();
 		showFiles();
 		Log.d("TEXT", "what is going on ?? the size is " + decks.size());
-		
-		
-		
+
 		Button startButton = (Button) findViewById(R.id.startButton);
 		startButton.setOnClickListener(startButtonListener);
 		Button doAllButton = (Button) findViewById(R.id.doAllButton);
 		doAllButton.setOnClickListener(doAllButtonListener);
 
-	} 
+	}
+
+	private void loadPreferences(){
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		numPerDeck = Integer.parseInt(sharedPreferences.getString("words_generated", "7"));
+		shuffle = sharedPreferences.getBoolean("shuffle", false);
+	}
 
 	private void showFiles() {
 		// TODO Auto-generated method stub
@@ -89,14 +100,13 @@ public class TableOfContents extends Activity {
 		int numCards = (int) Math.ceil(masterDeck.size() / numPerDeck)+1;
 		checkboxes = new CheckBox[numCards];
 		Log.d(TAG, "we have " + numCards + " cards");
-		ArrayList<FlashCard> temp= new ArrayList<FlashCard>();
+		ArrayList<FlashCard> temp= new ArrayList<>();
 		for(int i = 0; i < masterDeck.size(); i++){
 			if(i % numPerDeck == 0 && i > 0){
 				decks.add(temp);
-				temp = new ArrayList<FlashCard>();
+				temp = new ArrayList<>();
 			}
 			temp.add(masterDeck.get(i));
-			
 		}
 		decks.add(temp);
 		//MAKE CHECKBOXES!!!
@@ -104,40 +114,27 @@ public class TableOfContents extends Activity {
 		for(int i = 0; i < numCards; i++){
 			Log.d("TEXT", "making checkbox number " + i + ", the filenumber is " + getResources().getString(R.string.fileNumberString));
 			//loadIntoDeck(decks.get(i), wordFiles[i], wordFilesEng[i] );
-			fileNames.add(getResources().getString(R.string.fileNumberString) + i);
+			fileNames.add(getResources().getString(R.string.fileNumberString) + " " + i + " (" + decks.get(i).size() + " cards)");
 		}
-		/*for(int i = 0; i < wordFiles.length; i++){
-			decks.add(new ArrayList<FlashCard>());
-			Log.d("TEXT", "loading number " + i);
-			//loadIntoDeck(decks.get(i), wordFiles[i], wordFilesEng[i] );
-			makeDeck(decks.get(i), csvTest[i]); 
-			checkboxes[i] = (CheckBox) findViewById(checkBoxIds[i]);
-			checkboxes[i].setOnClickListener(checkBoxCheckedListener);
-		}
-		*/
 	}
 
 	private void openCSVs() {
-		// TODO Auto-generated method stub
-		File rootDir = Environment.getExternalStorageDirectory();
-		File folder = new File(rootDir.getPath() + URLGetter.FILEPATH );
-		Log.d(TAG, "The folder path is " + folder.getPath());
-		masterDeck = new ArrayList<FlashCard>();
+		masterDeck = new ArrayList<>();
 		for(int i = 0; i < selectedFiles.length; i++){
-			String csvFilePath = folder.getPath() + "/" + selectedFiles[i];
-		try {
-            CSVReader reader = new CSVReader(new FileReader(csvFilePath));
-            String[] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
-                // nextLine[] is an array of values from the line
-            	String front = nextLine[0];
-            	String back = nextLine[1];
-	        	FlashCard temp = new FlashCard(front, back);
-	        	masterDeck.add(temp);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			String csvFilePath = ExternalSearcher.getStorageDir().getPath() + "/" + selectedFiles[i];
+			try {
+				CSVReader reader = new CSVReader(new FileReader(csvFilePath));
+				String[] nextLine;
+				while ((nextLine = reader.readNext()) != null) {
+					// nextLine[] is an array of values from the line
+					String front = nextLine[0];
+					String back = nextLine[1];
+					FlashCard temp = new FlashCard(front, back);
+					masterDeck.add(temp);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		Log.d(TAG, "We added a file it is " + masterDeck.get(0).getBackSide().getData());
 	}
@@ -307,6 +304,11 @@ public class TableOfContents extends Activity {
  
 				// show it
 				alertDialog.show();
+	}
+
+	public void finishActivity(View view) {
+		Log.d("TOC", "FINSHED??");
+		finish();
 	}
 
 }

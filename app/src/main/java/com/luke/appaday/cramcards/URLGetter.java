@@ -162,7 +162,6 @@ public class URLGetter {
 			callerActivity.postExecuteDialog();
 			if(waitingForFinish){
 				Log.d(TAG, "We done with id " + id);
-				callerActivity.notifyIAmDone(getContents(), id);
 				waitingForFinish = false;
 			}
 	    }

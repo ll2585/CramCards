@@ -32,7 +32,7 @@ public class CardActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.front_side_of_card);
+        setContentView(R.layout.card);
         originalCards = getIntent().getParcelableArrayListExtra("originalDeck");
         if(getIntent().getParcelableArrayListExtra("data")==null){
             deckOfCards = new ArrayList<FlashCard>();

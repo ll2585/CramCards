@@ -33,5 +33,6 @@
     <string name="title_activity_main_screen">MainScreenActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="downloadfromwebsitestring">Download</string>
-    <string name="fileNumberString">File Number</string>
+    <string name="fileNumberString">Subset </string>
+    <string name="title_activity_settings">SettingsActivity</string>
 </resources>
